@@ -1,0 +1,292 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* ------------------------------------------------- */
+
+:root {
+    --text: #A7727D;
+    --BG : #F8EAD8;
+    --LightBox: #F9F5E7;
+    --DarkBox: #EDDBC7;
+    --GraphIncome : #adc6a8;
+    --GraphSaving : #8b9dbe;
+    --GraphExpenses: #e07389;
+}
+
+html, body {
+    font-family: Urbanist, Archivo, Quicksand, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 20px;
+    background-color: var(--BG);
+    color: var(--text);
+    max-height: 100%;
+}
+
+#AllContent {
+    display: none
+}
+
+#Pass {
+    display: grid;
+    grid-template-columns: auto;
+    justify-content: center;
+    height: 600px;
+    align-content: center;
+    text-align: center;
+}
+
+#Pass label {
+    margin: 20px;
+}
+
+#Pass input {
+    background-color: var(--DarkBox);
+    border: none;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0px 3px 15px 0px var(--text);
+    outline: none;
+    color: var(--text);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+input[type="password"] {
+    -webkit-text-security: disc;
+}
+
+#Pass button {
+    background-color: var(--text);
+    color: var(--BG);
+    box-shadow: 0px 1px 10px 0px black;
+    font-family: Urbanist;
+    padding: 10px 25px;
+    margin: 40px;
+    border:none;
+    border-radius: 15px;
+}
+
+#PassForm {
+    display:grid;
+}
+
+#PassErr {
+    background-color: #e07389;
+    color: var(--BG);
+    padding: 20px 100px;
+    border-radius: 15px;
+    display: none;
+    position: absolute;
+    top: 410px;
+    left: 10%;
+    transition: .7s ease;
+}
+/* --------- HEADER --------- */
+
+header {
+    background-color: var(--text);
+    padding: 20px 0;
+}
+.NavBar ul {
+    display: grid;
+    grid-template-columns: 15% auto auto auto;
+    place-items: center;
+}
+.NavBar a {
+    color: var(--DarkBox);
+    font-size: .7rem;
+    text-decoration: none;
+}
+.Adds {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    column-gap: 2px;
+    align-items: center;
+}
+header button {
+    background-color: var(--text);
+    border: none;
+    color: var(--BG);
+    font: .8rem Urbanist
+}
+.NavBar span {
+    font-weight: 100;
+}
+
+/* --------- MAIN --------- */
+main {
+    margin: 20px;
+    font-size: .7rem;
+    text-align: center;
+    height: 55%;
+
+}
+main h1 {
+    margin: 10px auto;
+    padding: 10px;
+    background-color: var(--BG);
+    color: var(--text);
+    border-radius: 20px;
+}
+
+main div > div {
+    padding: 5px 15px;
+    background-color: var(--DarkBox);
+    margin: 15px 0;
+    border-radius: 20px;
+}
+
+/* Add Expenses/Incomes or Savings */
+.AddExpenses, .AddIncomes, .AddSavings {
+    height: 110%;
+    width: 100%;
+    background-color: var(--DarkBox);
+    position: absolute;
+    text-align: center;
+    display:none
+}
+
+.AddExpensesForm, .AddIncomesForm, .AddSavingsForm {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: auto;
+    position:relative;
+}
+
+.AddExpensesForm input, .AddIncomesForm input, .AddSavingsForm input,
+.AddExpensesForm select,  .AddIncomesForm select, .AddSavingsForm select,
+.AddExpensesForm button, .AddIncomesForm button, .AddSavings button
+{
+    padding: 5px 15px;
+    margin: 10px 0;
+    background-color: var(--text);
+    color: var(--BG);
+    font: .6rem Urbanist;
+    border: none;
+    border-radius: 15px;
+    width: 90%;
+    justify-self: center;
+    outline: none;
+}
+
+.AddExpensesForm select,  
+.AddIncomesForm select{
+    padding: 10px 0;
+    width: 40%;
+}
+
+.AddExpensesForm button, .AddIncomesForm button, .AddSavingsForm button {
+    padding: 10px;
+    width: 50%;
+    margin: 35px 0;
+    text-transform: uppercase;
+}
+
+::-webkit-datetime-edit-text { padding: 0 0.3em }
+::-webkit-calendar-picker-indicator { filter: invert(90%) }
+::-webkit-datetime-edit-month-field { text-transform: uppercase; }
+::-webkit-datetime-edit-day-field { text-transform: uppercase; }
+::-webkit-datetime-edit-year-field { text-transform: uppercase; }
+
+
+
+/* First Part Welcome And Balance */
+.Welcome {
+    padding: 10px;
+}
+
+.Balance p:last-child {
+    text-align: left;
+    font-size: .6rem;
+    font-style: italic;
+    margin: 10px;
+}
+
+/* Latest Balance Parts */
+.ResumeAll {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-gap: 2%;
+    max-height: 70%;
+}
+
+.LatestSpendings {
+    grid-row: 1/3;
+    max-height: 500px;
+    height: 350px;
+}
+
+.LatestIncomes {
+    max-height: 300px;
+    height:200px;
+    grid-row: 1/2;
+}
+.Savings {
+    grid-row: 2/3;
+    height: 100px;
+    max-height: 100px;
+
+}
+
+.ResumeAll div {
+    overflow-y: scroll;
+}
+.ResumeAll table {
+    font-size: .5rem;
+    overflow: scroll;
+    width: 100%;
+
+}
+
+.ResumeAll table tr {
+    border-bottom: 1px solid #a7727d7f;
+}
+.ResumeAll table td {
+    padding: 5px;
+    text-align: left;
+}
+/* --------- FOOTER --------- */
+

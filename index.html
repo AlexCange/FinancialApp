@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100&family=Quicksand:wght@300&family=Urbanist:wght@100&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="Ressources/index.css">
+</head>
+
+<body>
+    <div id="Pass" class="Pass">
+        <form id="PassForm">
+        <label for="Password">Give the Password:</label>
+            <input name="Password" id="Password" type="password">
+        <button id="PassBtn" type="Submit">Enter</button>
+        </form>
+        <span id="PassErr">Wrong Password!</span>
+    </div>
+    <div id="AllContent" class="AllContent">
+    <header>
+        <div id="NavBar" class="NavBar">
+            <ul>
+                <button onclick="window.location.reload()"><li>Home</li></a>
+                <button id="AddExpenseBtn"><li class="Adds"><span class="material-symbols-outlined">add_circle</span> <p>Expenses</p></li></button>
+                <button id="AddIncomesBtn"><li class="Adds"><span class="material-symbols-outlined">add_circle</span> <p>Incomes</p></li></button>
+                <button id="AddSavingsBtn"><li class="Adds"><span class="material-symbols-outlined">add_circle</span> <p>Savings</p></li></button>
+            </ul>
+        </div>
+    </header>
+    <div id="AddExpenses" class="AddExpenses">
+        <form id="AddExpensesForm" class="AddExpensesForm">
+            <label>
+                What's the date of your buyings? <input type="date" id="EDate" required>
+            </label><br>
+            <label>What's the type of your expense? <select id="EType" required>
+                <optgroup label="Everyday">
+                    <option value="Food">Food</option>
+                    <option value="Rent">Rent</option>
+                    <option value="Bar/Restaurant">Bar/Restaurant</option>
+                    <option value="Beauty">Beauty</option>
+                    <option value="Lieferando">Lieferando</option>
+                    <option value="Other">Other</option>
+                </optgroup>
+                <optgroup label="Fixed Costs">
+                    <option value="Sport" class="h1">Sport</option>
+                    <option value="Phone">Phone</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Internet">Internet</option>
+                    <option value="Banking">Banking</option>
+                    <option value="Netflix/Spotify...">Netflix/Spotify...</option>
+                    <option value="Insurances">Insurances</option>
+                </optgroup>
+            </select></label>
+            <label>Short Description? <input type="text" id="EDescription" required></label>
+            <label>Enter the Amount: <input type="number" id="EAmount" step="0.01" required></label>
+            <button type="submit" >Add Expense</button>
+        </form>
+    </div>
+    <div id="AddIncomes" class="AddIncomes">
+        <form id="AddIncomesForm" class="AddIncomesForm">
+            <label>
+                What's the date of your income? <input type="date" id="IDate" required>
+            </label><br>
+            <label>What's the type of your expense? <select id="IType" required>
+                <optgroup label="Fixed">
+                    <option value="Salary">Salary</option>
+                    <option value="AfA">AfA</option>
+                    <option value="Bella">Bella</option>
+                    <option value="Solange">Solange</option>
+                </optgroup>
+                <optgroup label="Special">
+                    <option value="Family">Family</option>
+                    <option value="Tax">Tax</option>
+                    <option value="Refund">Refund</option>
+                </optgroup>
+            </select></label>
+            <label>Enter the Amount: <input type="number" id="IAmount" step="0.01" required></label>
+            <button type="submit" >Add Income</button>
+        </form>
+    </div>
+    <div id="AddSavings" class="AddSavings">
+        <form id="AddSavingsForm" class="AddSavingsForm">
+            <label>
+                What's the date of your transfer? <input type="date" id="SDate" required>
+            </label><br>
+            <label>Enter the Amount: <input type="number" id="SAmount" step="0.01" required></label>
+            <button type="submit" >Add Saving</button>
+        </form>
+    </div>
+    <main>
+        
+        <div class="WelcomeBalance" id="WelcomeBalance">
+                <div class="Welcome" id="Welcome">
+                Welcome Alex!
+            </div>
+            <div class="Balance" id="Balance">
+            </div>
+        </div>
+        <div id="MyChartContainer">
+            <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+        </div>
+        <div class="ResumeAll" id="ResumeAll">
+            <div class="LatestSpendings" id="LatestSpendings">
+            </div>
+            <div class="LatestIncomes" id="LatestIncomes">
+            </div>
+            <div class="Savings" id="Savings">
+            </div>
+        </div>
+        
+    </main>
+    <footer>
+
+    </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+        apiKey: "AIzaSyDA9eBZ_PsEfkAgu2lf7qHG5tbIhrhD3NU",
+        authDomain: "finance-2afc3.firebaseapp.com",
+        projectId: "finance-2afc3",
+        storageBucket: "finance-2afc3.appspot.com",
+        messagingSenderId: "474176906348",
+        appId: "1:474176906348:web:370f5f9a5367c76fe76449",
+        measurementId: "G-7RNK3WX7FH"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="JS/script.js"></script>
+</body>
+</html>
