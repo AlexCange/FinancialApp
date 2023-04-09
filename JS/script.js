@@ -1,11 +1,13 @@
 // Expenses 
 class Expenses {
     constructor(
+        ownerId = '',
         Date = '',
         Type = '',
         Description = '',
         Amount  = 0.00
     ) {
+        this.ownerId = ownerId
         this.Date = Date
         this.Type = Type
         this.Description = Description
@@ -27,10 +29,12 @@ const expensesBook = new ExpensesBook()
 // Incomes
 class Incomes {
     constructor(
+        ownerId = '',
         Amount = 0.00,
         Date = '',
         Type = ''
     ) {
+        this.ownerId = ownerId
         this.Amount = Amount
         this.Date = Date
         this.Type = Type
@@ -55,9 +59,11 @@ const incomesBook = new IncomesBook()
 //Savings
 class Savings {
     constructor(
-    Amount = 0.00,
-    Date = ''
+        ownerId = '',
+        Amount = 0.00,
+        Date = ''
     ) {
+        this.ownerId = ownerId
         this.Amount = Amount
         this.Date = Date
     }
@@ -78,34 +84,219 @@ class SavingsBook {
 }
 const savingsBook = new SavingsBook()
 
-// --------------- DISPLAY INFORMATIONS ---------------
-let PasswordInput = document.getElementById('Password')
-let PasswordDiv = document.getElementById('Pass')
-let PasswordBtn = document.getElementById('PassBtn')
-let PasswordForm = document.getElementById('PassForm')
-let PassErr = document.getElementById('PassErr')
 
-const RightPassword = () => {
-    let pass = 'AlexBella'
-    if (PasswordInput.value === pass) {
-        PasswordDiv.style.display = 'none'
-        document.getElementById('AllContent').style.display = 'block'
-    }
-    else {
-        PasswordForm.reset()
-        PassErr.style.display = 'block'
-        setTimeout( () => {
-            PassErr.style.display = 'none'
-        }, 2000)
-    }
+// -------------------- Auth -----------------------
+
+// ---------- AUTH BTN -------------
+const auth = firebase.auth();
+
+const MainDiv = document.getElementById('AllContent')
+const LogOptionsPage = document.getElementById('LogForm')
+
+if (auth.currentUser) {
+    console.log(auth.currentUser);
+    LogOptionsPage.style.display = 'none'
+}
+else {
+    console.log(101);
+    LogOptionsPage.style.display = 'grid'
+    MainDiv.style.display = 'none'
 }
 
-PasswordForm.onsubmit = (e) => {
+
+const LogInBtn = document.getElementById('LogInBtn')
+const RegisterBtn = document.getElementById('RegisterBtn')
+
+//LogIn
+const LogInDiv = document.getElementById('LogInDiv')
+
+LogInBtn.addEventListener('click', (e) => {
     e.preventDefault()
-    RightPassword()
-    UpdateAll()
+    LogOptionsPage.style.display = 'none'
+    LogInDiv.style.display = 'grid'
+})
+
+const LogInEmail = document.getElementById('LogInemail')
+const LogInPassword = document.getElementById('LogInPassword')
+const LogInForm = document.getElementById('LogInForm')
+
+let OnSubmitLogIn = async (e) => {
+    e.preventDefault()
+    auth.signInWithEmailAndPassword(LogInEmail.value, LogInPassword.value).then((userCredential) => {
+        let user = userCredential.user
+        getExpenses()
+        getIncomes()
+        getSavings()
+    }).catch((error) => {
+        console.log(error.code);
+        console.log(error.message);
+    })
+    setTimeout(() => {
+        UpdateAll()
+    }, 1000)
+    
+}
+LogInForm.onsubmit = OnSubmitLogIn
+
+//Register
+let RegisterDiv = document.getElementById('RegisterDiv')
+
+RegisterBtn.addEventListener('click', (e) => {
+    e.preventDefault()
+    LogOptionsPage.style.display = 'none'
+    RegisterDiv.style.display = 'grid'
+})
+
+const RegisterEmail = document.getElementById('Registeremail')
+const RegisterPassword = document.getElementById('RegisterPassword')
+const RegisterForm = document.getElementById('RegisterForm')
+
+let OnSubmitRegister = (e) => {
+    e.preventDefault()
+    auth.createUserWithEmailAndPassword(RegisterEmail.value, RegisterPassword.value).then((userCredential) => {
+        getExpenses()
+        getIncomes()
+        getSavings()
+        UpdateAll()
+    }).catch((error) => {
+        document.getElementById('ErrorMsg').innerText = error.message
+        document.getElementById('ErrorMsg').style.display = 'block'
+        setTimeout(() => {
+            document.getElementById('ErrorMsg').style.display = 'none'
+        }, 5000)
+    })
+}
+RegisterForm.onsubmit = OnSubmitRegister
+
+const LogOutBtn = document.getElementById('LogOutBtn')
+LogOutBtn.addEventListener('click', () => {
+    auth.signOut()
+    window.location.reload()
+})
+
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        var uid = user.uid;
+        LogInDiv.style.display = 'none'
+        RegisterDiv.style.display = 'none'
+        MainDiv.style.display = 'block'
+        getExpenses();
+        getIncomes();
+        getSavings();
+        CreateWelcomeMsg()
+        UpdateAll();
+    }
+});
+
+// ------------ FIREBASE CONNECT DATABASE -------------
+const db = firebase.firestore()
+
+let unsubscribe
+
+// Expenses
+const getExpenses = () => {
+    unsubscribe = db
+    .collection('Expenses')
+    .where('ownerId', '==', auth.currentUser.uid)
+    .onSnapshot((snapshot) => {
+        expensesBook.expense = docsToExpenses(snapshot.docs)
+    })
 }
 
+const addExpenseDB = (newExpense) => {
+    db.collection('Expenses').add(ExpensetoDoc(newExpense))
+}
+
+const docsToExpenses = (docs) => {
+    return docs.map((doc) => {
+        return new Expenses(
+            doc.data().ownerId,
+            doc.data().Date,
+            doc.data().Type,
+            doc.data().Description,
+            doc.data().Amount
+        )
+    })
+}
+
+const ExpensetoDoc = (expense) => {
+    return {
+        ownerId: auth.currentUser.uid,
+        Date: expense.Date,
+        Type: expense.Type,
+        Description: expense.Description,
+        Amount: expense.Amount
+    }
+}
+
+// Incomes
+
+const getIncomes = () => {
+    unsubscribe = db
+    .collection('Incomes')
+    .where('ownerId', '==', auth.currentUser.uid)
+    .onSnapshot((snapshot) => {
+        incomesBook.income = docsToIncomes(snapshot.docs)
+    })
+}
+
+const addIncomeDB = (newIncome) => {
+    db.collection("Incomes").add(IncometoDoc(newIncome))
+}
+
+const docsToIncomes = (docs) => {
+    return docs.map((doc) => {
+        return new Incomes(
+            doc.data().ownerId,
+            doc.data().Amount,
+            doc.data().Date,
+            doc.data().Type
+        )
+    })
+}
+
+const IncometoDoc = (income) => {
+    return {
+        ownerId: auth.currentUser.uid,
+        Amount: income.Amount,
+        Date: income.Date,
+        Type: income.Type
+    }
+}
+
+// Savings
+const getSavings = () => {
+    unsubscribe = db
+    .collection('Savings')
+    .where('ownerId', '==', auth.currentUser.uid)
+    .onSnapshot((snapshot) => {
+        savingsBook.saving = docsToSavings(snapshot.docs)
+    })
+}
+
+const addSavingDB = (newSaving) => {
+    db.collection("Savings").add(SavingtoDoc(newSaving))
+}
+
+const docsToSavings = (docs) => {
+    return docs.map((doc) => {
+        return new Savings(
+            doc.data().ownerId,
+            doc.data().Amount,
+            doc.data().Date
+        )
+    })
+}
+
+const SavingtoDoc = (saving) => {
+    return {
+        ownerId: auth.currentUser.uid,
+        Date: saving.Date,
+        Amount: saving.Amount
+    }
+}
+
+// --------------- DISPLAY INFORMATIONS ---------------
 const WelcomeDiv = document.getElementById('Welcome')
 
 const BalanceDiv = document.getElementById('Balance')
@@ -118,11 +309,10 @@ let totalexpenses
 let totalincomes
 let totalsavings
 
-const UpdateAll = () => {setTimeout(() => {
+const UpdateAll = () => {
     totalexpenses = 0
     totalincomes = 0
     totalsavings = 0
-
     expensesBook.expense.forEach((minus) => {
         totalexpenses -= parseFloat(minus.Amount)
     })
@@ -134,19 +324,24 @@ const UpdateAll = () => {setTimeout(() => {
     })
     balance = (totalincomes + totalexpenses).toFixed(2)
     CreateContentBalance();
+    CreateWelcomeMsg()
     CreateContentSpendings();
     CreateContentIncomes();
     CreateContentSavings();
     CreateChart();
-},1000)}
-
-
-
+}
 
 // Balance Div
 const CreateWelcomeMsg = () => {
     WelcomeDiv.innerHTML = ''
-    WelcomeDiv.textContent = 'Welcome Alex'
+    Welcomemsg = document.createElement('p')
+    if (auth.currentUser.displayName) {
+        Welcomemsg.textContent = `Welcome ${auth.currentUser.displayName}`
+    }
+    else {
+        Welcomemsg.textContent = 'Welcome!'
+    }
+    WelcomeDiv.appendChild(Welcomemsg)
 }
 
 const CreateContentBalance = () => {
@@ -293,7 +488,9 @@ const getExpensesbyInput = () => {
     const Type = document.getElementById('EType').value
     const Description = document.getElementById('EDescription').value
     const Amount = parseFloat(document.getElementById('EAmount').value)
-    return new Expenses(Date, Type, Description, Amount)
+    const ownerId = auth.currentUser.uid
+
+    return new Expenses(ownerId, Date, Type, Description, Amount)
 }
 
 const addExpense = (e) => {
@@ -328,7 +525,9 @@ const getIncomesbyInput = () => {
     const Date = document.getElementById('IDate').value
     const Type = document.getElementById('IType').value
     const Amount = parseFloat(document.getElementById('IAmount').value)
-    return new Incomes(Amount, Date, Type)
+    const ownerId = auth.currentUser.uid
+
+    return new Incomes(ownerId, Amount, Date, Type)
 }
 
 const addIncome = (e) => {
@@ -361,7 +560,8 @@ const getSavingsbyInput = () => {
 
     const Date = document.getElementById('SDate').value
     const Amount = parseFloat(document.getElementById('SAmount').value)
-    return new Savings(Amount, Date)
+    const ownerId = auth.currentUser.uid
+    return new Savings(ownerId, Amount, Date)
 }
 
 const addSaving = (e) => {
@@ -379,108 +579,4 @@ const addSaving = (e) => {
 }
 
 AddSavingsForm.onsubmit = addSaving
-
-// ------------ FIREBASE CONNECT DATABASE -------------
-const db = firebase.firestore()
-
-let unsubscribe
-
-// Expenses
-function getExpenses() {
-    unsubscribe = db
-    .collection('Expenses')
-    .onSnapshot((snapshot) => {
-        expensesBook.expense = docsToExpenses(snapshot.docs)
-    })
-}
-
-const addExpenseDB = (newExpense) => {
-    db.collection('Expenses').add(ExpensetoDoc(newExpense))
-}
-
-const docsToExpenses = (docs) => {
-    return docs.map((doc) => {
-        return new Expenses(
-            doc.data().Date,
-            doc.data().Type,
-            doc.data().Description,
-            doc.data().Amount
-        )
-    })
-}
-
-const ExpensetoDoc = (expense) => {
-    return {
-        Date: expense.Date,
-        Type: expense.Type,
-        Description: expense.Description,
-        Amount: expense.Amount
-    }
-}
-
-// Incomes
-
-function getIncomes() {
-    unsubscribe = db
-    .collection('Incomes')
-    .onSnapshot((snapshot) => {
-        incomesBook.income = docsToIncomes(snapshot.docs)
-    })
-}
-
-const addIncomeDB = (newIncome) => {
-    db.collection("Incomes").add(IncometoDoc(newIncome))
-}
-
-const docsToIncomes = (docs) => {
-    return docs.map((doc) => {
-        return new Incomes(
-            doc.data().Amount,
-            doc.data().Date,
-            doc.data().Type
-        )
-    })
-}
-
-const IncometoDoc = (income) => {
-    return {
-        Amount: income.Amount,
-        Date: income.Date,
-        Type: income.Type
-    }
-}
-
-// Savings
-function getSavings() {
-    unsubscribe = db
-    .collection('Savings')
-    .onSnapshot((snapshot) => {
-        savingsBook.saving = docsToSavings(snapshot.docs)
-    })
-}
-
-const addSavingDB = (newSaving) => {
-    db.collection("Savings").add(SavingtoDoc(newSaving))
-}
-
-const docsToSavings = (docs) => {
-    return docs.map((doc) => {
-        return new Savings(
-            doc.data().Amount,
-            doc.data().Date
-        )
-    })
-}
-
-const SavingtoDoc = (saving) => {
-    return {
-        Date: saving.Date,
-        Amount: saving.Amount
-    }
-}
-
-
-getExpenses()
-getIncomes()
-getSavings()
 
