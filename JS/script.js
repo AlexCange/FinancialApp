@@ -128,13 +128,17 @@ let OnSubmitLogIn = async (e) => {
         getIncomes()
         getSavings()
     }).catch((error) => {
+        document.getElementById('ErrorMsgLog').innerText = error.message
+        document.getElementById('ErrorMsgLog').style.display = 'block'
+        setTimeout(() => {
+            document.getElementById('ErrorMsgLog').style.display = 'none'
+        }, 5000)
         console.log(error.code);
         console.log(error.message);
     })
     setTimeout(() => {
         UpdateAll()
     }, 1000)
-    
 }
 LogInForm.onsubmit = OnSubmitLogIn
 
@@ -323,6 +327,8 @@ const UpdateAll = () => {
         totalsavings += parseFloat(save.Amount)
     })
     balance = (totalincomes + totalexpenses).toFixed(2)
+    document.querySelector('header').style.display = 'block'
+    document.querySelector('main').style.display = 'block'
     CreateContentBalance();
     CreateWelcomeMsg()
     CreateContentSpendings();
@@ -364,8 +370,8 @@ const CreateContentBalance = () => {
     BalanceDiv.appendChild(TotalSavings)
 }
 
-// Graph
-
+// ------------------------ CHARTS ------------------------
+// -- Balance Graph
 const ctx = document.getElementById('myChart').getContext('2d'); // 2d context
 
 const CreateChart = () => {new Chart(ctx, {
@@ -373,7 +379,7 @@ const CreateChart = () => {new Chart(ctx, {
     data: {
         labels: ['Incomes', 'Expenses', 'Savings'],
         datasets: [{
-            backgroundColor: ['#adc6a8', '#e07389', '#8b9dbe'],
+            backgroundColor: ['#C8D9A9', '#E8AB99', '#8b9dbe'],
             data: [totalincomes, totalexpenses, totalsavings],
             borderColor: '#F8EAD8', 
         }], 
@@ -389,6 +395,183 @@ const CreateChart = () => {new Chart(ctx, {
         }
     }
 })}
+
+// SUMMARY CHART 
+
+// Get the month datas
+let expensesMonth = 0
+let incomesMonth = 0
+let savingsMonth = 0
+const getTimeFrame = () => {
+    let MonthChoosen = document.getElementById('Months').value
+    expensesMonth = 0
+    expensesBook.expense.forEach(expense => {
+        if (expense.Date.substr(5,2) === MonthChoosen) {
+            expensesMonth -= expense.Amount
+        }
+    })
+    incomesMonth = 0
+    incomesBook.income.forEach(income => {
+        if (income.Date.substr(5,2) === MonthChoosen) {
+            incomesMonth += income.Amount
+        }
+    })
+    savingsMonth = 0
+    savingsBook.saving.forEach(saving => {
+        if (saving.Date.substr(5,2) === MonthChoosen) {
+            savingsMonth += saving.Amount
+        }
+    })
+}
+
+// GET INCOMES AND EXPENSES FOR MONTH
+const CreateSummaryChart = () => {
+    let chartsummary = document.getElementById('SummaryChart').getContext('2d');
+    let MonthChoosen = document.getElementById('Months').value
+    new Chart(chartsummary, {
+    type:"pie", 
+    data: {
+        labels: ['Incomes', 'Expenses'], 
+        datasets: [{
+            backgroundColor: ['#C8D9A9', '#E8AB99'],
+            data: [incomesMonth, expensesMonth],
+            borderColor: '#F8EAD8'
+        }]
+    }, 
+    options: {
+        aspectRatio: 4,
+        title: {display:true, text:`Balance for Month: ${MonthChoosen}`}, 
+        legend: {display:false}
+    }
+})}
+
+// DETAILS CHARTS
+// Get details 
+let ETypeList = []
+let Eresult = [];
+let ITypeList = []
+let Iresult = [];
+let EType = []
+let EAmount = []
+let IType = []
+let IAmount = []
+
+const getDetails = () => {
+    let MonthChoosen = document.getElementById('Months').value
+
+    ETypeList = []
+    expensesBook.expense.forEach(expense => {
+        if (expense.Date.substr(5,2) === MonthChoosen) {
+            ETypeList.push({Type:expense.Type, Amount:expense.Amount})
+        }
+    })
+    Eresult = []
+    ETypeList.reduce(function(res, value) {
+    if (!res[value.Type]) {
+        res[value.Type] = { Type: value.Type, tot: 0 };
+        Eresult.push(res[value.Type])
+    }
+    res[value.Type].tot += value.Amount;
+    return res;
+    }, {});
+
+    ITypeList = []
+    incomesBook.income.forEach(income => {
+        if (income.Date.substr(5,2) === MonthChoosen) {
+            ITypeList.push({Type:income.Type, Amount:income.Amount})
+        }
+    })
+    Iresult = []
+    ITypeList.reduce(function(res, value) {
+    if (!res[value.Type]) {
+        res[value.Type] = { Type: value.Type, tot: 0 };
+        Iresult.push(res[value.Type])
+    }
+    res[value.Type].tot += value.Amount;
+    return res;
+    }, {});
+
+    EType = []
+    EAmount = []
+    IType = []
+    IAmount = []
+    Eresult.forEach(item => EType.push(item.Type))
+    Eresult.forEach(item => EAmount.push(item.tot))
+    Iresult.forEach(item => IType.push(item.Type))
+    Iresult.forEach(item => IAmount.push(item.tot))
+}
+
+// EXPENSES GRAPH
+let DetailsDiv = document.getElementById('DetailsGraphsDiv')
+
+const EDetails = () => {
+    let DetailsGraph1 = document.getElementById('DetailsGraphs1').getContext('2d')
+    new Chart(DetailsGraph1, {
+    type: 'pie', 
+    data: {
+        labels: EType,
+        datasets: [
+            {
+                data: EAmount,
+                borderColor: '#F8EAD8', 
+                backgroundColor: ['#E8AB99','#FFD4B6', '#FFE08C', '#FFBB8C', '#E88E74'],
+            }
+        ]
+    },
+    options: {
+        aspectRatio: 2,
+        responsive: true,
+        title: {
+            display: true,
+            text: 'Expenses'
+        },
+        legend: {
+            position: 'right'
+        }
+    }
+})}
+
+// INCOMES GRAPHS
+const IDetails = () => {
+    let DetailsGraph2 = document.getElementById('DetailsGraphs2').getContext('2d')
+    new Chart(DetailsGraph2, {
+    type: 'pie', 
+    data: {
+        labels: IType,
+        datasets: [
+            {
+                data: IAmount,
+                borderColor: '#F8EAD8', 
+                backgroundColor: ['#C8D9A9', '#D1F0C6', '#BFD9C1', '#B2D6B9', '#E3F889'],
+            }
+        ]
+    },
+    options: {
+        aspectRatio: 2,
+        title: {
+            display: true,
+            text: 'Incomes'
+        },
+        legend: {
+            position: 'left'
+        }
+    }
+})}
+
+// ON CHANGE ...
+document.getElementById('Months').onchange = () => {
+    getTimeFrame()
+    setTimeout(()=>{
+        CreateSummaryChart()
+        getDetails()
+        EDetails()
+        IDetails()
+    },1000)
+    
+}
+
+// ------------------------------------------------------------------------------------------------
+// CREATE TABLES 
 
 // Spendings Div
 const CreateContentSpendings = () => {
@@ -480,6 +663,8 @@ AddExpensesBtn.addEventListener('click', () => {
     AddExpensesDiv.style.display = 'block'
     AddIncomesDiv.style.display = 'none'
     AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+
 })
 
 const getExpensesbyInput = () => {
@@ -504,6 +689,8 @@ const addExpense = (e) => {
     AddExpensesDiv.style.display = 'none'
     AddIncomesDiv.style.display = 'none'
     AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+
 }
 
 AddExpensesForm.onsubmit = addExpense
@@ -518,6 +705,8 @@ AddIncomesBtn.addEventListener('click', () => {
     AddIncomesDiv.style.display = 'block'
     AddExpensesDiv.style.display = 'none'
     AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+
 })
 
 const getIncomesbyInput = () => {
@@ -541,6 +730,8 @@ const addIncome = (e) => {
     AddExpensesDiv.style.display = 'none'
     AddIncomesDiv.style.display = 'none'
     AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+
 }
 
 AddIncomesForm.onsubmit = addIncome
@@ -554,6 +745,8 @@ AddSavingsBtn.addEventListener('click', () => {
     AddSavingsDiv.style.display = 'block'
     AddIncomesDiv.style.display = 'none'
     AddExpensesDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+
 })
 
 const getSavingsbyInput = () => {
@@ -575,8 +768,63 @@ const addSaving = (e) => {
     AddExpensesDiv.style.display = 'none'
     AddIncomesDiv.style.display = 'none'
     AddSavingsDiv.style.display = 'none'
-
+    SummaryGraphsDiv.style.display = 'none'
 }
 
 AddSavingsForm.onsubmit = addSaving
+
+
+const SummaryBtn = document.getElementById('SummaryBtn')
+const SummaryGraphsDiv = document.getElementById('SummaryDiv')
+SummaryBtn.addEventListener('click', () => {
+    if (SummaryGraphsDiv.style.display = 'none') {
+        SummaryGraphsDiv.style.display = 'block'
+    }
+    else {
+        SummaryGraphsDiv.style.display = 'none'
+    }
+    AddExpensesDiv.style.display = 'none'
+    AddIncomesDiv.style.display = 'none'
+    AddSavingsDiv.style.display = 'none'
+})
+
+let EClostBtn = document.getElementById('ECloseBtn')
+let IClostBtn = document.getElementById('ICloseBtn')
+let SClostBtn = document.getElementById('SCloseBtn')
+let SummaryClostBtn = document.getElementById('SummaryCloseBtn')
+
+EClostBtn.addEventListener('click', () => {
+    AddExpensesDiv.style.display = 'none'
+    AddIncomesDiv.style.display = 'none'
+    AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+    MainDiv.style.display = 'block'
+})
+
+IClostBtn.addEventListener('click', () => {
+    console.log('Clicked');
+    AddExpensesDiv.style.display = 'none'
+    AddIncomesDiv.style.display = 'none'
+    AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+    MainDiv.style.display = 'block'
+})
+
+SClostBtn.addEventListener('click', () => {
+    AddExpensesDiv.style.display = 'none'
+    AddIncomesDiv.style.display = 'none'
+    AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+    MainDiv.style.display = 'block'
+})
+
+SummaryClostBtn.addEventListener('click', () => {
+    AddExpensesDiv.style.display = 'none'
+    AddIncomesDiv.style.display = 'none'
+    AddSavingsDiv.style.display = 'none'
+    SummaryGraphsDiv.style.display = 'none'
+    MainDiv.style.display = 'block'
+})
+    
+
 

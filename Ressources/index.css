@@ -133,7 +133,7 @@ input[type="password"] {
     left: 10%;
     transition: .7s ease;
 }
-#ErrorMsg {
+#ErrorMsg, #ErrorMsgLog {
     display:none;
     position:absolute;
     top: 480px;
@@ -150,10 +150,11 @@ input[type="password"] {
 header {
     background-color: var(--text);
     padding: 20px 0;
+    display: none;
 }
 .NavBar ul {
     display: grid;
-    grid-template-columns: 15% auto auto auto;
+    grid-template-columns: 10% auto auto auto auto;
     place-items: center;
 }
 .NavBar a {
@@ -161,7 +162,7 @@ header {
     font-size: .7rem;
     text-decoration: none;
 }
-.Adds {
+.Adds, .Summary {
     display: grid;
     grid-template-columns: 30% 70%;
     column-gap: 2px;
@@ -183,6 +184,7 @@ main {
     font-size: .7rem;
     text-align: center;
     height: 55%;
+    display: none;
 
 }
 main h1 {
@@ -245,7 +247,7 @@ main div > div {
     outline: none;
 }
 
-.AddExpensesForm select,  
+.AddExpensesForm select, #SummaryDiv select 
 .AddIncomesForm select{
     padding: 10px 0;
     width: 40%;
@@ -320,6 +322,61 @@ main div > div {
 .ResumeAll table td {
     padding: 5px;
     text-align: left;
+}
+
+#SummaryDiv {
+    padding: 2%;
+    width: 96%;
+    display: none;
+}
+#SummaryChartDiv {
+    max-width: 80%;
+}
+#DetailsGraphsDiv {
+    display: inline-flex;
+    margin: auto;
+    position: relative;
+    max-width: 48%;
+}
+
+#SummaryDiv select {
+    background-color: var(--text);
+    color:var(--BG);
+    font: .8rem Urbanist;
+    border: none;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 0 15px;
+}
+
+#SummaryDiv hr {
+    border: 1px solid var(--text);
+    width: 80%;
+    margin: 20px auto;
+}
+
+#ICloseBtn, #ECloseBtn {
+    background-color: var(--DarkBox);
+    border: none;
+    color: var(--text);
+    float: right;
+    margin: 5px;
+}
+
+#SCloseBtn {
+    background-color: var(--DarkBox);
+    border: none;
+    color: var(--text);
+    float: right;
+    margin: 5px;
+}
+
+#SummaryCloseBtn {
+    background-color: var(--BG);
+    border: none;
+    color: var(--text);
+    position: absolute;
+    right: 5px;
 }
 /* --------- FOOTER --------- */
 

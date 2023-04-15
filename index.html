@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <link rel="stylesheet" href="Ressources/index.css">
     <link rel="manifest" href="app.webmanifest">
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
+
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./JS/App.js")
@@ -52,17 +54,6 @@
             <button id="LogInBtn">LogIn</button>
             <button id="RegisterBtn">Register</button>
         </div>  
-        <!-- <div id="Pass" class="Pass">
-        <form id="PassForm">
-            <label for="Email">Give your email</label>
-            <input type="email" id="email" name="email">
-            <label for="Password">Give the Password:</label>
-            <input name="Password" id="Password" type="password">
-            <button id="Login" type="Submit">LogIn</button>
-            <button id="SignUp" type="Submit">SignUp</button>
-        </form>
-        <span id="PassErr">Wrong Password!</span>
-        </div> -->
         <div id="LogInDiv">
             <form id="LogInForm">
                 <label for="LogInEmail">Give your email</label>
@@ -71,6 +62,7 @@
                 <input name="LogInPassword" id="LogInPassword" type="password" required>
                 <button id="Login" type="Submit">LogIn</button>
             </form>
+            <div id="ErrorMsgLog"></div>
         </div>
         <div id="RegisterDiv">
             <form id="RegisterForm">
@@ -86,9 +78,10 @@
         <header>
             <div id="NavBar" class="NavBar">
             <ul>
-                <button onclick="auth.signOut(), window.location.reload()">
-                <li>Home</li>
-                </button><button id="AddExpenseBtn">
+                <li><button id="LogOutBtn" onclick="auth.signOut(), window.location.reload()"><span class="material-symbols-outlined">
+                    logout
+                    </span></button></li>
+                <button id="AddExpenseBtn">
                 <li class="Adds"><span class="material-symbols-outlined">add_circle</span>
                     <p>Expenses</p>
                 </li>
@@ -103,10 +96,20 @@
                     <p>Savings</p>
                 </li>
                 </button>
+                <button id="SummaryBtn">
+                    <li class="Summary"><span class="material-symbols-outlined">
+                        account_balance_wallet
+                        </span>
+                        <p>Summary</p>
+                    </li>
+                </button>
             </ul>
             </div>
         </header>
         <div id="AddExpenses" class="AddExpenses">
+            <button id="ECloseBtn"><span class="material-symbols-outlined">
+                close
+                </span></button>
             <form id="AddExpensesForm" class="AddExpensesForm">
             <label>
                 What's the date of your buyings? <input type="date" id="EDate" required="">
@@ -114,14 +117,17 @@
             <label>What's the type of your expense? <select id="EType" required="">
                 <optgroup label="Everyday">
                     <option value="Food">Food</option>
-                    <option value="Rent">Rent</option>
                     <option value="Bar/Restaurant">Bar/Restaurant</option>
                     <option value="Beauty">Beauty</option>
                     <option value="Lieferando">Lieferando</option>
+                    <option value="Transports">Transports</option>
+                    <option value="Travel">Travel</option>
                     <option value="Other">Other</option>
+                    <option value="Transfer">Transfer</option>
                 </optgroup>
                 <optgroup label="Fixed Costs">
-                    <option value="Sport" class="h1">Sport</option>
+                    <option value="Sport">Sport</option>
+                    <option value="Rent">Rent</option>
                     <option value="Phone">Phone</option>
                     <option value="Electricity">Electricity</option>
                     <option value="Internet">Internet</option>
@@ -136,6 +142,9 @@
             </form>
         </div>
         <div id="AddIncomes" class="AddIncomes">
+            <button id="ICloseBtn"><span class="material-symbols-outlined">
+                close
+                </span></button>
             <form id="AddIncomesForm" class="AddIncomesForm">
             <label>
                 What's the date of your income? <input type="date" id="IDate" required="">
@@ -158,6 +167,9 @@
             </form>
         </div>
         <div id="AddSavings" class="AddSavings">
+            <span id="SCloseBtn" class="material-symbols-outlined">
+                close
+                </span>
             <form id="AddSavingsForm" class="AddSavingsForm">
             <label>
                 What's the date of your transfer? <input type="date" id="SDate" required="">
@@ -166,9 +178,36 @@
             <button type="submit">Add Saving</button>
             </form>
         </div>
+        <div id="SummaryDiv" class="SummaryDiv">
+            <button id="SummaryCloseBtn"><span class="material-symbols-outlined">
+                close
+                </span></button>
+            <label>What Month:<select id="Months">
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select></label>
+            <hr>
+            <div id="SummaryChartDiv">
+                <canvas id="SummaryChart"></canvas>
+            </div>
+            <div id="DetailsGraphsDiv">
+                <canvas id="DetailsGraphs1"></canvas>
+                <canvas id="DetailsGraphs2"></canvas>
+            </div>
+        </div>
         <main>
             <div class="WelcomeBalance" id="WelcomeBalance">
-                <div id="LogOutDiv"><button id="LogOutBtn">LogOut</button></div>
+                <div id="LogOutDiv"></div>
             <div class="Welcome" id="Welcome">
             </div>
             <div class="Balance" id="Balance">
