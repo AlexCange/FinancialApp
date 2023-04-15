@@ -142,6 +142,7 @@ let OnSubmitLogIn = async (e) => {
 }
 LogInForm.onsubmit = OnSubmitLogIn
 
+
 //Register
 let RegisterDiv = document.getElementById('RegisterDiv')
 
@@ -585,7 +586,8 @@ const CreateContentSpendings = () => {
         let SpendingRow = document.createElement('tr')
 
         let SpendingDataDate = document.createElement('td')
-        SpendingDataDate.innerHTML = Date(spending.Date.secondes).toString().substring(4,10);
+        SpendingDataDate.innerHTML = `${spending.Date.substr(8,2)}-${spending.Date.substr(5,2)}`
+        //Date(spending.Date.secondes).toString().substring(4,10);
 
         let SpendingDesc = document.createElement('td')
         SpendingDesc.textContent = `${spending.Description} - ${spending.Type}`
@@ -613,7 +615,7 @@ const CreateContentIncomes = () => {
         let IncomeRow = document.createElement('tr')
 
         let IncomeDataDate = document.createElement('td')
-        IncomeDataDate.textContent = Date(income.Date.seconds).toString().substring(4,10);
+        IncomeDataDate.textContent = `${income.Date.substr(8,2)}-${income.Date.substr(5,2)}`
 
         let IncomeDesc = document.createElement('td')
         IncomeDesc.textContent = income.Type
@@ -640,8 +642,7 @@ const CreateContentSavings = () => {
         let savingRow = document.createElement('tr')
 
         let SavingDate = document.createElement('td')
-        SavingDate.textContent = Date(saving.Date.seconds).toString().substring(4,10)
-
+        SavingDate.textContent = `${saving.Date.substr(8,2)}-${saving.Date.substr(5,2)}`
         let SavingAmount = document.createElement('td')
         SavingAmount.textContent = `${saving.Amount}€`
 
@@ -826,5 +827,4 @@ SummaryClostBtn.addEventListener('click', () => {
     MainDiv.style.display = 'block'
 })
     
-
-
+window.onload = auth.signOut()
